@@ -10,6 +10,7 @@ export default Ember.Controller.extend({
 	photos: PhotoCollection.create(),
 	searchField: '',
 	tagSearchField: '',
+	filteredPhotosLoaded: false,
 	tagList: ['hi','cheese'],
 	filteredPhotos: function () {
 		var filter = this.get('searchField');
@@ -34,6 +35,7 @@ export default Ember.Controller.extend({
 			var requestURL = host + "?method="+method + "&api_key="+apiKey+"&tags="+tag+"&per_page=50&format=json&nojsoncallback=1";
 			var photos = this.get('photos');
 			var t = this;
+			t.set('filteredPhotosLoaded',true);
 			Ember.$.getJSON(requestURL, function(data){
 				//callback for successfully completed requests
 				//make secondary requests to get all of the photo information
@@ -65,7 +67,8 @@ export default Ember.Controller.extend({
 		},
 		clicktag: function(tag){
 			this.set('tagSearchField', tag);
-			this.set('loading', true);
+			this.set('loading', false)
+			this.set('filteredPhotosLoaded',false)
 			this.get('photos').content.clear();
 			this.store.unloadAll('photo');
 			this.send('getPhotos',tag);

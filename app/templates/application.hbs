@@ -18,18 +18,16 @@
 	</div>
 </nav>
 <div class="container">
-
-	{{#if filteredPhotos}}
+	{{#liquid-if filteredPhotosLoaded use="toDown"}}
 		<ul class="list-group">
 		{{#each photo in filteredPhotos}}
 		<li class="list-group-item">
 			<div class="media">
-			<div class="media-left media-middle">
-				<a href="{{photo.link}}" target="_blank">
-					<img class="media-object feed-img" src={{photo.url}} />
-				</a>
-				Taken: {{photo.humanReadableDate}}<br>
-				By: <a href={{photo.ownerurl}} target="_blank">{{photo.owner.username}}</a><br>
+				<div class="media-left media-middle">
+					{{light-box href=photo.url data-lightbox=photo.id data-title=photo.title
+						data-class="media-object feed-img"}}
+					Taken: <a href={{photo.link}}>{{photo.humanReadableDate}}<br></a>
+					By: <a href={{photo.ownerurl}} target="_blank">{{photo.owner.username}}</a><br>
 			</div>
 				<div class="media-body">
 					<h4 class="media-heading">{{photo.title}} ({{photo.views}} Views)</h4>
@@ -49,17 +47,17 @@
 		{{/each}}
 		</ul>
 	{{else}}
-		{{#if loading}}
+		{{#liquid-if loading use="toDown"}}
 			<img src="../page-loading.gif" class="img-responsive center-block"/>
 		{{else}}
 			<div class="jumbotron">
-			<h1>[app-name]</h1>
-			<p>Created by [yourname]</p>
+			<h1>Ember Tutorial</h1>
+			<p>Created by Ryan Grandgenett</p>
 			<p>Click one of the popular flickr tags below or search one above:</p>
 			{{#each tag in tagList}}
 				<button class="btn btn-info btn-small tag-button" {{action "clicktag" tag}}>#{{tag}}</button>
 			{{/each}}
 		</div>
-		{{/if}}
-	{{/if}}
+		{{/liquid-if}}
+	{{/liquid-if}}
 </div>
