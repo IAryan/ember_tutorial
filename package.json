@@ -35,6 +35,10 @@
     "ember-data": "1.0.0-beta.18",
     "ember-disable-proxy-controllers": "^1.0.0",
     "ember-export-application-global": "^1.0.2",
-    "liquid-fire": "0.19.5"
+    "liquid-fire": "0.19.5",
+    "oauth-1.0a": "0.2.1"
+  },
+  "dependencies": {
+    "requirejs": "^2.1.20"
   }
 }

@@ -10,7 +10,11 @@ export default Ember.Controller.extend({
 	photos: PhotoCollection.create(),
 	searchField: '',
 	tagSearchField: '',
-	filteredPhotosLoaded: false,
+	appKey: 'c731f4d8be2e6fd3efa41452ae8c3d57',
+	appSecret: 'f3d901bda87e4c5c',
+	filteredPhotosLoaded: function() { 
+		return this.get('filteredPhotos').length > 0; 
+	}.property('filteredPhotos.length'),
 	tagList: ['hi','cheese'],
 	filteredPhotos: function () {
 		var filter = this.get('searchField');
@@ -27,15 +31,15 @@ export default Ember.Controller.extend({
 			this.get('photos').content.clear();
 			this.store.unloadAll('photo');
 			this.send('getPhotos',this.get('tagSearchField'));
+			console.log("Connected to search function");
 		},
 		getPhotos: function(tag){
-			var apiKey = '5b1bc3ed18cd7f674f05b4ed1d1d6009';
+			var apiKey = this.get('appKey');
 			var host = 'https://api.flickr.com/services/rest/';
 			var method = "flickr.photos.search";
 			var requestURL = host + "?method="+method + "&api_key="+apiKey+"&tags="+tag+"&per_page=50&format=json&nojsoncallback=1";
 			var photos = this.get('photos');
 			var t = this;
-			t.set('filteredPhotosLoaded',true);
 			Ember.$.getJSON(requestURL, function(data){
 				//callback for successfully completed requests
 				//make secondary requests to get all of the photo information
@@ -65,10 +69,30 @@ export default Ember.Controller.extend({
 				});
 			});
 		},
+		login: function () {
+			var apiKey = this.get('appKey');
+			var appSecret = this.get('appSecret');
+			var timestamp = new Date().getTime().toString();
+			var nonce = Math.floor(Math.random()*0x1327823AABCDE12).toString(16);
+			var host = 'https://www.flickr.com/services/oauth/request_token';
+			var callback = encodeURIComponent("http://localhost:4200/");
+
+			var requestURL = "oauth_callback="+callback+"&oauth_consumer_key="+apiKey+"&oauth_nonce="+nonce+"&oauth_signature_method=HMAC-SHA1"+"&oauth_timestamp="+timestamp+"&oauth_version=1.0";
+
+			var baseString = "GET&"+encodeURIComponent(host)+"&"+encodeURIComponent(requestURL).replace(/\+/g, '%20');
+
+			var key = appSecret + "&";
+
+			var signature = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA1(baseString, key));
+
+			var tokenURL = host+"?"+"oauth_callback="+callback+"&oauth_consumer_key="+apiKey+"&oauth_nonce="+nonce+"&oauth_signature_method=HMAC-SHA1"+"&oauth_timestamp="+timestamp+"&oauth_version=1.0"+"&oauth_signature="+encodeURIComponent(signature);
+
+			console.log("This is you url you would use to request an oauth 1.0a flickr request token:", tokenURL);
+			console.log("Unfortunately the flickr API does not return json data and I have not found a good workaround to make a cross domain text only ajax call.");
+		},
 		clicktag: function(tag){
 			this.set('tagSearchField', tag);
-			this.set('loading', false)
-			this.set('filteredPhotosLoaded',false)
+			this.set('loading', true);
 			this.get('photos').content.clear();
 			this.store.unloadAll('photo');
 			this.send('getPhotos',tag);
@@ -76,7 +100,7 @@ export default Ember.Controller.extend({
 	},
 	init: function(){
 		this._super.apply(this, arguments);
-		var apiKey = '5b1bc3ed18cd7f674f05b4ed1d1d6009';
+		var apiKey = this.get('appKey');
 		var host = 'https://api.flickr.com/services/rest/';
 		var method = "flickr.tags.getHotList";
 		var requestURL = host + "?method="+method + "&api_key="+apiKey+"&count=75&format=json&nojsoncallback=1";
