@@ -75,7 +75,7 @@ export default Ember.Controller.extend({
 			var timestamp = new Date().getTime().toString();
 			var nonce = Math.floor(Math.random()*0x1327823AABCDE12).toString(16);
 			var host = 'https://www.flickr.com/services/oauth/request_token';
-			var callback = encodeURIComponent("http://localhost:4200/");
+			var callback = encodeURIComponent("https://infinite-brook-2297.herokuapp.com/");
 
 			var requestURL = "oauth_callback="+callback+"&oauth_consumer_key="+apiKey+"&oauth_nonce="+nonce+"&oauth_signature_method=HMAC-SHA1"+"&oauth_timestamp="+timestamp+"&oauth_version=1.0";
 
